@@ -3,6 +3,7 @@ package com.xwhking.yuapi.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.xwhking.yuapi.annotation.AuthCheck;
+import com.xwhking.yuapi.annotation.InvokeInterface;
 import com.xwhking.yuapi.common.BaseResponse;
 import com.xwhking.yuapi.common.DeleteRequest;
 import com.xwhking.yuapi.common.ErrorCode;

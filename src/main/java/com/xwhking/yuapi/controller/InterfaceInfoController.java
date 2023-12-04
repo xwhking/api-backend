@@ -21,6 +21,7 @@ import com.xwhking.yuapi.model.dto.interfaceInfo.InterfaceInvokeRequest;
 import com.xwhking.yuapi.model.entity.InterfaceInfo;
 import com.xwhking.yuapi.model.entity.User;
 import com.xwhking.yuapi.service.InterfaceInfoService;
+import com.xwhking.yuapi.service.UserInterfaceInfoService;
 import com.xwhking.yuapi.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +51,9 @@ public class InterfaceInfoController {
 
     @Resource
     private XWHKINGClient xwhkingClient;
+
+    @Resource
+    private UserInterfaceInfoService userInterfaceInfoService;
 
     private final static Gson GSON = new Gson();
 
@@ -193,11 +197,14 @@ public class InterfaceInfoController {
     }
 
     @PostMapping("/invoke")
-    public BaseResponse<Object> invoke(@RequestBody InterfaceInvokeRequest interfaceInvokeRequest){
+    public BaseResponse<Object> invoke(@RequestBody InterfaceInvokeRequest interfaceInvokeRequest,HttpServletRequest request){
         long interfaceId = interfaceInvokeRequest.getId();
         String url = interfaceInvokeRequest.getUrl();
         String userRequestParams = interfaceInvokeRequest.getUserRequestParams();
-        String result = xwhkingClient.getName(userRequestParams);
+        //String result = xwhkingClient.getName(userRequestParams);
+        Long userId = userService.getLoginUser(request).getId();
+        Long interfaceInfoId = interfaceInvokeRequest.getId();
+        boolean result = userInterfaceInfoService.recordInvokeOne(userId,interfaceInfoId);
         return ResultUtils.success(result);
     }
 

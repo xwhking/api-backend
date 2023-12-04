@@ -97,6 +97,19 @@
             <artifactId>hutool-all</artifactId>
             <version>5.8.8</version>
         </dependency>
+        <!-- 生成二维码核心组件 -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+        <!-- 二维码的依赖非web应用无需导入javase依赖包 -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
