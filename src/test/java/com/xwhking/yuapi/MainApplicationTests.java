@@ -1,7 +1,6 @@
 package com.xwhking.yuapi;
-
-import com.xwhking.interfacestarter.client.XWHKINGClient;
 import com.xwhking.yuapi.config.WxOpenConfig;
+import com.xwhking.yuapistarter.client.XWHKINGClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,13 +19,12 @@ class MainApplicationTests {
     @Resource
     private WxOpenConfig wxOpenConfig;
     @Resource
-    private XWHKINGClient xwhkingClient;
-    @Resource
     RedisTemplate<String , Object> redisTemplate;
+    @Resource
+    private XWHKINGClient xwhkingClient;
 
     @Test
-    void testRedis(){
-        redisTemplate.opsForValue().set("Hello","NiMa");
-        System.out.println(redisTemplate.opsForValue().get("Hello"));
+    void testStarter(){
+        System.out.println(xwhkingClient.invokeGetQrCode("Hello World!"));
     }
 }

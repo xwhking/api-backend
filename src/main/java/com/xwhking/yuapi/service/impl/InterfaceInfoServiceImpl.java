@@ -35,7 +35,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         }
 
         String name = interfaceInfo.getName();
-        String url = interfaceInfo.getUrl();
+        String url = interfaceInfo.getUri();
         String method = interfaceInfo.getMethod();
         // 创建时，参数不能为空
         if (add) {

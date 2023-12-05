@@ -32,7 +32,11 @@ public class InterfaceInfo implements Serializable {
     /**
      * 接口地址
      */
-    private String url;
+    private String uri;
+    /**
+     * 接口主机 IP
+     */
+    private String host;
     /**
      * 请求参数
      */
@@ -96,7 +100,7 @@ public class InterfaceInfo implements Serializable {
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
             && (this.getName() == null ? other.getName() == null : this.getName().equals(other.getName()))
             && (this.getDescription() == null ? other.getDescription() == null : this.getDescription().equals(other.getDescription()))
-            && (this.getUrl() == null ? other.getUrl() == null : this.getUrl().equals(other.getUrl()))
+            && (this.getUri() == null ? other.getUri() == null : this.getUri().equals(other.getUri()))
             && (this.getRequestHeader() == null ? other.getRequestHeader() == null : this.getRequestHeader().equals(other.getRequestHeader()))
             && (this.getResponseHeader() == null ? other.getResponseHeader() == null : this.getResponseHeader().equals(other.getResponseHeader()))
             && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()))
@@ -114,7 +118,8 @@ public class InterfaceInfo implements Serializable {
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
         result = prime * result + ((getDescription() == null) ? 0 : getDescription().hashCode());
-        result = prime * result + ((getUrl() == null) ? 0 : getUrl().hashCode());
+        result = prime * result + ((getHost() == null) ? 0 : getHost().hashCode());
+        result = prime * result + ((getUri() == null) ? 0 : getUri().hashCode());
         result = prime * result + ((getRequestHeader() == null) ? 0 : getRequestHeader().hashCode());
         result = prime * result + ((getResponseHeader() == null) ? 0 : getResponseHeader().hashCode());
         result = prime * result + ((getStatus() == null) ? 0 : getStatus().hashCode());
@@ -135,7 +140,8 @@ public class InterfaceInfo implements Serializable {
         sb.append(", id=").append(id);
         sb.append(", name=").append(name);
         sb.append(", description=").append(description);
-        sb.append(", url=").append(url);
+        sb.append(", host=").append(host);
+        sb.append(", url=").append(uri);
         sb.append(", requestHeader=").append(requestHeader);
         sb.append(", responseHeader=").append(responseHeader);
         sb.append(", status=").append(status);

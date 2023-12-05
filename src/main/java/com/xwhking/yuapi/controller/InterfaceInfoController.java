@@ -3,7 +3,6 @@ package com.xwhking.yuapi.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
-import com.xwhking.interfacestarter.client.XWHKINGClient;
 import com.xwhking.yuapi.annotation.AuthCheck;
 import com.xwhking.yuapi.common.BaseResponse;
 import com.xwhking.yuapi.common.DeleteRequest;
@@ -48,9 +47,6 @@ public class InterfaceInfoController {
 
     @Resource
     private UserService userService;
-
-    @Resource
-    private XWHKINGClient xwhkingClient;
 
     @Resource
     private UserInterfaceInfoService userInterfaceInfoService;
@@ -198,10 +194,10 @@ public class InterfaceInfoController {
 
     @PostMapping("/invoke")
     public BaseResponse<Object> invoke(@RequestBody InterfaceInvokeRequest interfaceInvokeRequest,HttpServletRequest request){
+        // todo  完成调用示例
         long interfaceId = interfaceInvokeRequest.getId();
         String url = interfaceInvokeRequest.getUrl();
         String userRequestParams = interfaceInvokeRequest.getUserRequestParams();
-        //String result = xwhkingClient.getName(userRequestParams);
         Long userId = userService.getLoginUser(request).getId();
         Long interfaceInfoId = interfaceInvokeRequest.getId();
         boolean result = userInterfaceInfoService.recordInvokeOne(userId,interfaceInfoId);

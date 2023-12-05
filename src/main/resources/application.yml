@@ -90,9 +90,9 @@ cos:
     secretKey: xxx
     region: xxx
     bucket: xxx
-
-xwhking:
-  client:
-    access-key: xwhking
-    secret-key: admin123
-    user-id: 123123
+com:
+  xwhking:
+    client:
+      access-key: admin123
+      secret-key: admin123
+      user-id: 1725120515803697154

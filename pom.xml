@@ -138,7 +138,7 @@
         </dependency>
         <dependency>
             <groupId>com.xwhking</groupId>
-            <artifactId>InterfaceStarter</artifactId>
+            <artifactId>yuapi-starter</artifactId>
             <version>0.0.1</version>
         </dependency>
     </dependencies>
