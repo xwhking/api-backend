@@ -13,15 +13,13 @@ import com.xwhking.yuapi.constant.UserConstant;
 import com.xwhking.yuapi.exception.BusinessException;
 import com.xwhking.yuapi.exception.ThrowUtils;
 import com.xwhking.yuapi.model.dto.IdRequest;
-import com.xwhking.yuapi.model.dto.interfaceInfo.InterfaceInfoAddRequest;
-import com.xwhking.yuapi.model.dto.interfaceInfo.InterfaceInfoQueryRequest;
-import com.xwhking.yuapi.model.dto.interfaceInfo.InterfaceInfoUpdateRequest;
-import com.xwhking.yuapi.model.dto.interfaceInfo.InterfaceInvokeRequest;
+import com.xwhking.yuapi.model.dto.interfaceInfo.*;
 import com.xwhking.yuapi.model.entity.InterfaceInfo;
 import com.xwhking.yuapi.model.entity.User;
 import com.xwhking.yuapi.service.InterfaceInfoService;
 import com.xwhking.yuapi.service.UserInterfaceInfoService;
 import com.xwhking.yuapi.service.UserService;
+import com.xwhking.yuapistarter.client.XWHKINGClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -47,6 +45,9 @@ public class InterfaceInfoController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private XWHKINGClient xwhkingClient;
 
     @Resource
     private UserInterfaceInfoService userInterfaceInfoService;
@@ -197,10 +198,26 @@ public class InterfaceInfoController {
         // todo  完成调用示例
         long interfaceId = interfaceInvokeRequest.getId();
         String url = interfaceInvokeRequest.getUrl();
-        String userRequestParams = interfaceInvokeRequest.getUserRequestParams();
-        Long userId = userService.getLoginUser(request).getId();
-        Long interfaceInfoId = interfaceInvokeRequest.getId();
-        boolean result = userInterfaceInfoService.recordInvokeOne(userId,interfaceInfoId);
+        String param = interfaceInvokeRequest.getUserRequestParams();
+        Gson gson = new Gson();
+        InvokeParam invokeParam = gson.fromJson(param,InvokeParam.class);
+        Object result;
+        switch (url){
+            case "/api/invoke/daily":
+                result = xwhkingClient.invokeDaily();
+                break;
+            case "/api/invoke/getExpression":
+                result = xwhkingClient.invokeGetExpression(invokeParam.getKeyword());
+                break;
+            case "/api/invoke/getOneSentence":
+                result = xwhkingClient.invokeGetOneSentence(invokeParam.getType());
+                break;
+            case "/api/invoke/getQrCode":
+                result = xwhkingClient.invokeGetQrCode(invokeParam.getContent());
+                break;
+            default:
+                throw new BusinessException(ErrorCode.PARAMS_ERROR,"url不存在");
+        }
         return ResultUtils.success(result);
     }
 

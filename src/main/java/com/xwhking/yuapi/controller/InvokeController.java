@@ -17,6 +17,7 @@ import com.xwhking.yuapi.model.entity.Expression;
 import com.xwhking.yuapi.model.entity.Sentences;
 import com.xwhking.yuapi.model.enums.SentenceType;
 import com.xwhking.yuapi.service.SentencesService;
+import com.xwhking.yuapistarter.config.ClientConfig;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

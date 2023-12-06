@@ -1,5 +1,7 @@
 package com.xwhking.yuapi.controller;
 
+import cn.hutool.http.HttpRequest;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.xwhking.yuapi.annotation.AuthCheck;
@@ -10,6 +12,7 @@ import com.xwhking.yuapi.common.ResultUtils;
 import com.xwhking.yuapi.constant.UserConstant;
 import com.xwhking.yuapi.exception.BusinessException;
 import com.xwhking.yuapi.exception.ThrowUtils;
+import com.xwhking.yuapi.mapper.UserInterfaceInfoMapper;
 import com.xwhking.yuapi.model.dto.IdRequest;
 import com.xwhking.yuapi.model.dto.post.PostAddRequest;
 import com.xwhking.yuapi.model.dto.post.PostEditRequest;
@@ -21,11 +24,14 @@ import com.xwhking.yuapi.model.dto.userinterfaceinfo.UserInterfaceInfoUpdateRequ
 import com.xwhking.yuapi.model.entity.Post;
 import com.xwhking.yuapi.model.entity.User;
 import com.xwhking.yuapi.model.entity.UserInterfaceInfo;
+import com.xwhking.yuapi.model.vo.InterfaceInfoStatistic;
 import com.xwhking.yuapi.model.vo.PostVO;
+import com.xwhking.yuapi.model.vo.StatisticInterface;
 import com.xwhking.yuapi.service.PostService;
 import com.xwhking.yuapi.service.UserInterfaceInfoService;
 import com.xwhking.yuapi.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.search.similarities.Lambda;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,6 +54,9 @@ public class UserInterfaceInfoController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private UserInterfaceInfoMapper userInterfaceInfoMapper;
 
     private final static Gson GSON = new Gson();
 
@@ -142,4 +151,57 @@ public class UserInterfaceInfoController {
         return ResultUtils.success(userInterfaceInfo);
     }
 
+    @GetMapping("/getTime")
+    public BaseResponse<UserInterfaceInfo> getTime(long interfaceId,HttpServletRequest request){
+        // 1. 每次请求先判断现在是否存在这个用户与接口的信息，如果不存在，那么就创建
+        User loginUser = userService.getLoginUser(request);
+        UserInterfaceInfo userInterfaceInfo = getUserInterfaceInfoForLogic(interfaceId,request);
+        if(userInterfaceInfo == null){
+            userInterfaceInfo = new UserInterfaceInfo();
+            userInterfaceInfo.setUserId(loginUser.getId());
+            userInterfaceInfo.setInterfaceInfoId(interfaceId);
+            userInterfaceInfo.setTotalNum(0);
+            userInterfaceInfo.setLeftNum(0);
+            userInterfaceInfo.setStatus(0);
+            userInterfaceInfoService.save(userInterfaceInfo);
+        }
+        // 2. 创建或者拿到用户接口的信息以后，判断剩余量是否等于40，如果等于就发出提示说，已到上限，请求失败
+        int leftNum = userInterfaceInfo.getLeftNum();
+        ThrowUtils.throwIf(leftNum >= 40,ErrorCode.OPERATION_ERROR,"不要再多了次数不能超过40");
+        // 3. 如果没有40，固定判断一下加20 的结果，如果结果大于等于40那么就发出已经达到上限，并且把数据修改到40
+        leftNum = Math.min(leftNum + 20, 40);
+        userInterfaceInfo.setLeftNum(leftNum);
+        userInterfaceInfoService.updateById(userInterfaceInfo);
+        return ResultUtils.success(userInterfaceInfo);
+    }
+
+    @GetMapping("/getUserInterface")
+    public BaseResponse<UserInterfaceInfo> getUserInterfaceInfo(long interfaceId,HttpServletRequest request){
+
+        UserInterfaceInfo userInterfaceInfo = getUserInterfaceInfoForLogic(interfaceId,request);
+        ThrowUtils.throwIf(userInterfaceInfo == null,ErrorCode.OPERATION_ERROR,"用户接口信息不存在");
+        return ResultUtils.success(userInterfaceInfo);
+    }
+
+
+
+
+    public UserInterfaceInfo getUserInterfaceInfoForLogic(long interfaceId,HttpServletRequest request ){
+        User loginUser = userService.getLoginUser(request);
+        ThrowUtils.throwIf(loginUser == null || interfaceId <= 0 || (long)loginUser.getId() <= 0,ErrorCode.PARAMS_ERROR,"接口id用户id错误");
+        LambdaQueryWrapper<UserInterfaceInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(UserInterfaceInfo::getUserId,loginUser.getId());
+        lambdaQueryWrapper.eq(UserInterfaceInfo::getInterfaceInfoId,interfaceId);
+        return userInterfaceInfoService.getOne(lambdaQueryWrapper);
+    }
+
+    @GetMapping("/statistic")
+    public BaseResponse<StatisticInterface> getStatistic(){
+        int totalNum = userInterfaceInfoMapper.getTotalNumInteger();
+        List<InterfaceInfoStatistic> interfaceInfoStatistics = userInterfaceInfoMapper.getPerInterfaceStatistic();
+        StatisticInterface statisticInterface = new StatisticInterface();
+        statisticInterface.setTotalNum(totalNum);
+        statisticInterface.setPerInterfacesStatistics(interfaceInfoStatistics);
+        return ResultUtils.success(statisticInterface);
+    }
 }
